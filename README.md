@@ -15,7 +15,7 @@ Repositori ini berisi fondasi project untuk Tugas Besar DevOps (CI/CD Jenkins) p
 
 ## Stack
 
-- Node.js 20 + Express
+- Node.js 20 + Express (runtime didukung Azure App Service untuk Tugas Besar 2)
 - PostgreSQL 16
 - Knex (migrasi + seeder) dengan driver `pg`
 - Jest + Supertest

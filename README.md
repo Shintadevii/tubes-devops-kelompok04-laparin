@@ -9,8 +9,8 @@ Repositori ini berisi fondasi project untuk Tugas Besar DevOps (CI/CD Jenkins) p
 | No | Nama | NIM | Peran |
 |----|------|-----|-------|
 | 1 | Reika Elvaretta Putri Utomo | 102062400120 | Tech Lead / Backend |
-| 2 | Ghazi Rayshafiq Elfandi | 102062400068 | DevOps Engineer |
-| 3 | Shinta Devi Arsy Zelika | 102062400096 | Container Engineer |
+| 2 | Ghazi Rayshafiq Elfandi | 102062400068 | Container Engineer |
+| 3 | Shinta Devi Arsy Zelika | 102062400096 | DevOps Engineer |
 | 4 | Semua Anggota | - | QA & Tech Writer |
 
 ## Stack

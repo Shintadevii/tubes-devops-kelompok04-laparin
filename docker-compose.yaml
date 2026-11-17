@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-laparin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-laparin_db}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - internal_net
+    # Database tidak mengekspos ports ke host (hanya akses internal)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-laparin} -d ${DB_NAME:-laparin_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: laparin:1
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-laparin}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME:-laparin_db}
+    ports:
+      - "${APP_PORT:-8000}:3000"
+    networks:
+      - internal_net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  # Nama volume otomatis diawali COMPOSE_PROJECT_NAME (misal: laparin_staging_pg_data)
+  pg_data:
+
+networks:
+  internal_net:
+    driver: bridge

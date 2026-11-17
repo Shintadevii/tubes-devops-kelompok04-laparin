@@ -6,7 +6,6 @@
 node_modules
 npm-debug.log
 coverage
-tests
 Dockerfile
 docker-compose.yml
 compose.yaml

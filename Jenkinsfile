@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     environment {
         DOCKERHUB_USER = 'shintadevi'
         IMAGE_NAME = 'laparin'

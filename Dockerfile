@@ -25,7 +25,7 @@ COPY knexfile.js ./
 COPY src ./src
 COPY db ./db
 COPY docker-entrypoint.sh ./
-RUN chmod +x ./docker-entrypoint.sh && chown -R node:node /app
+RUN sed -i 's/\r$//' ./docker-entrypoint.sh && chmod +x ./docker-entrypoint.sh && chown -R node:node /app
 USER node
 EXPOSE 3000
 ENTRYPOINT ["./docker-entrypoint.sh"]

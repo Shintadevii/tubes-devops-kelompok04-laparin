@@ -1,31 +1,32 @@
-# syntax=docker/dockerfile:1
-
-FROM node:20-alpine AS deps
+# STAGE 1: Test & Quality Gate (Opsional - Dijalankan khusus di CI/CD)
+# Perintah: docker build --target test -t laparin:test .
+FROM node:20.18-alpine AS test
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json* ./
 RUN npm ci
-
-FROM node:20-alpine AS test
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm test
 
-FROM node:20-alpine AS prod-deps
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
 
-FROM node:20-alpine AS runtime
+# STAGE 2: Production Dependencies Builder
+# Tujuan: Mengunduh HANYA library produksi (mengabaikan devDependencies)
+FROM node:20.18-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+
+# STAGE 3: Production Runtime (Final Image)
+# Tujuan: Image ramping, aman (non-root), dan siap melayani traffic production
+FROM node:20.18-alpine AS production
 ENV NODE_ENV=production
 WORKDIR /app
-COPY --from=prod-deps /app/node_modules ./node_modules
-COPY package.json package-lock.json ./
-COPY knexfile.js ./
-COPY src ./src
-COPY db ./db
-COPY docker-entrypoint.sh ./
-RUN sed -i 's/\r$//' ./docker-entrypoint.sh && chmod +x ./docker-entrypoint.sh && chown -R node:node /app
+COPY --chown=node:node --from=deps /app/node_modules ./node_modules
+COPY --chown=node:node package.json package-lock.json* knexfile.js ./
+COPY --chown=node:node src ./src
+COPY --chown=node:node db ./db
 USER node
 EXPOSE 3000
-ENTRYPOINT ["./docker-entrypoint.sh"]
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+CMD ["node", "src/server.js"]

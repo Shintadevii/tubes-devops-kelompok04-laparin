@@ -1,5 +1,15 @@
 .git
 .gitignore
+.github
+.env
+.env.*
+node_modules
+npm-debug.log
+coverage
+Dockerfile
+docker-compose.yml
+compose.yaml
+README.md
 .env
 .env.*
 node_modules

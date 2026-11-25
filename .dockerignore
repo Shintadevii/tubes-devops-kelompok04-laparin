@@ -10,3 +10,11 @@ Dockerfile
 docker-compose.yml
 compose.yaml
 README.md
+.env
+.env.*
+node_modules
+coverage
+npm-debug.log*
+README.md
+compose.yaml
+compose.local.yaml

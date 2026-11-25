@@ -1,0 +1,61 @@
+name: ${COMPOSE_PROJECT_NAME:-laparin} 
+# jangan lupa itu diatas diganti nanti diisi pakai melainkan nama project Docker Compose
+services:
+  app:
+    image: ${DOCKERHUB_USER}/laparin:${IMAGE_TAG:-latest}
+    # sudah otomatis membaca variabel DOCKERHUB_USER dari file .env. \
+    # Jadi, saat masuk tahap pipeline nanti, kalian cukup mengisi DOCKERHUB_USER=<username_dockerhub_kalian> 
+    # di file .env (dan mencantumkan contohnya di .env.example) tanpa perlu mengotak-atik compose.yaml.
+    ports:
+      - "${APP_PORT:-8000}:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - frontend
+      - backend
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - backend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true
+
+volumes:
+  db_data:

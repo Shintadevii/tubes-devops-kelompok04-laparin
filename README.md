@@ -141,3 +141,4 @@ Build akan gagal apabila ada test yang gagal karena stage `test` menjalankan `RU
 ├── .dockerignore
 └── README.md
 ```
+Uji build otomatis #2.

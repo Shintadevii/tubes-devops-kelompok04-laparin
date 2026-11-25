@@ -1,5 +1,5 @@
 # STAGE 1: Test & Quality Gate (Opsional - Dijalankan khusus di CI/CD)
-# Perintah: docker build --target test -t laparin:test .
+# Perintah: docker build --target test -t laparin:1 .
 FROM node:20.18-alpine AS test
 WORKDIR /app
 COPY package.json package-lock.json* ./

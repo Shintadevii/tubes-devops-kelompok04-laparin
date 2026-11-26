@@ -20,15 +20,27 @@ pipeline {
             }
         }
 
+        
         stage('Test') {
             steps {
                 sh '''
                     docker build \
                         --target test \
                         -t laparin-test:${BUILD_NUMBER} .
+
+                    container_id=$(docker create laparin-test:${BUILD_NUMBER})
+
+                    trap 'docker rm -f "$container_id" >/dev/null 2>&1 || true' EXIT
+
+                    mkdir -p reports
+
+                    docker cp "$container_id":/app/reports/junit.xml reports/junit.xml
                 '''
+
+                junit testResults: 'reports/junit.xml'
             }
         }
+
 
         stage('Build Image') {
             steps {

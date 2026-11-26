@@ -34,7 +34,7 @@ pipeline {
             steps {
                 sh '''
                     docker build \
-                        --target runtime \
+                        --target production \
                         -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} \
                         -t ${DOCKERHUB_USER}/${IMAGE_NAME}:latest .
                 '''

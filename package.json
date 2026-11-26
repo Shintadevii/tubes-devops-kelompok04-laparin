@@ -20,12 +20,23 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "jest-junit": "^17.0.0",
     "supertest": "^7.0.0"
   },
-  "jest": {
+    "jest": {
     "testEnvironment": "node",
     "collectCoverageFrom": [
       "src/**/*.js"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "./reports",
+          "outputName": "junit.xml"
+        }
+      ]
     ]
   }
 }
